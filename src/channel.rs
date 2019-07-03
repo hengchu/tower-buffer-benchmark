@@ -78,7 +78,7 @@ impl Future for Svc {
 
 impl Drop for Svc {
     fn drop(&mut self) {
-        println!("{}[ client -> worker ]{}", "-".repeat(30), "-".repeat(30));
+        println!("{}[ send -> recv ]{}", "-".repeat(30), "-".repeat(30));
         let h = &self.1;
         println!(
             "mean: {:.1}µs, p50: {}µs, p90: {}µs, p99: {}µs, p999: {}µs, max: {}µs, #: {}",
@@ -103,7 +103,7 @@ impl Drop for Svc {
         }
 
         println!("");
-        println!("{}[ worker -> client ]{}", "-".repeat(30), "-".repeat(30));
+        println!("{}[ recv -> send ]{}", "-".repeat(30), "-".repeat(30));
         let h = &mut self.2;
         h.refresh();
         println!(
