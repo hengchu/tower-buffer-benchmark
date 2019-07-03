@@ -10,3 +10,12 @@ tokio-sync = "0.1"
 tower = "0.1"
 quanta = "0.3"
 hdrhistogram = "6"
+futures = "0.1"
+
+[[bin]]
+name = "buffer"
+path = "src/buffer.rs"
+
+[[bin]]
+name = "channel"
+path = "src/channel.rs"
