@@ -80,9 +80,10 @@ impl Drop for Svc {
             h.max() / 1_000,
             h.len()
         );
-        for v in h.iter_log(1_000, 2.0).skip_while(|v| v.quantile() < 0.01) {
+        for v in h.iter_log(1_000, 2.0) {
             println!(
-                "{:4}µs | {:40} | {:4.1}th %-ile",
+                "{:4}µs - {:4}µs | {:40} | {:4.1}th %-ile",
+                (v.value_iterated_to() + 1) / 2 / 1_000,
                 (v.value_iterated_to() + 1) / 1_000,
                 "*".repeat(
                     (v.count_since_last_iteration() as f64 * 40.0 / h.len() as f64).ceil().max(0.0) as usize
@@ -105,9 +106,10 @@ impl Drop for Svc {
             h.max() / 1_000,
             h.len()
         );
-        for v in h.iter_log(1_000, 2.0).skip_while(|v| v.quantile() < 0.01) {
+        for v in h.iter_log(1_000, 2.0) {
             println!(
-                "{:4}µs | {:40} | {:4.1}th %-ile",
+                "{:4}µs - {:4}µs | {:40} | {:4.1}th %-ile",
+                (v.value_iterated_to() + 1) / 2 / 1_000,
                 (v.value_iterated_to() + 1) / 1_000,
                 "*".repeat(
                     (v.count_since_last_iteration() as f64 * 40.0 / h.len() as f64).ceil().max(0.0) as usize
