@@ -10,37 +10,38 @@ fn main() {
         Builder::default().build(|| Histogram::new_with_bounds(10, 1_000_000, 4).unwrap());
     let dispatcher = Dispatch::new(subscriber);
 
-    tracing::dispatcher::set_global_default(dispatcher.clone()).unwrap();
-    tokio::run(future::lazy(move || {
-        for ti in 0..150 {
-            tokio::spawn(
-                stream::iter_ok((0..).take_while(move |_| start.elapsed() < runtime))
-                    .fold((), move |_, ri| {
-                        let span = if ri % 1_000 == ti {
-                            tracing::trace_span!("span")
-                        } else {
-                            tracing::Span::none()
-                        };
-                        let _guard = span.enter();
-                        tracing::trace!("cache1");
-                        tracing::trace!("cache2");
-                        tracing::trace!("begin");
-                        let (tx, rx) = tokio_sync::oneshot::channel();
-                        tracing::trace!("then");
-                        tokio::spawn(
-                            tokio::timer::Delay::new(
-                                std::time::Instant::now() + std::time::Duration::from_millis(1),
-                            )
-                            .map_err(|_| ())
-                            .and_then(|_| tx.send(())),
-                        );
-                        rx.map_err(|_| ())
-                    })
-                    .map(|_| ()),
-            );
-        }
-        Ok(())
-    }));
+    tracing::dispatcher::with_default(&dispatcher, || {
+        tokio::run(future::lazy(move || {
+            for ti in 0..150 {
+                tokio::spawn(
+                    stream::iter_ok((0..).take_while(move |_| start.elapsed() < runtime))
+                        .fold((), move |_, ri| {
+                            let span = if ri % 1_000 == ti {
+                                tracing::trace_span!("span")
+                            } else {
+                                tracing::Span::none()
+                            };
+                            let _guard = span.enter();
+                            tracing::trace!("cache1");
+                            tracing::trace!("cache2");
+                            tracing::trace!("begin");
+                            let (tx, rx) = tokio_sync::oneshot::channel();
+                            tracing::trace!("then");
+                            tokio::spawn(
+                                tokio::timer::Delay::new(
+                                    std::time::Instant::now() + std::time::Duration::from_millis(1),
+                                )
+                                .map_err(|_| ())
+                                .and_then(|_| tx.send(())),
+                            );
+                            rx.map_err(|_| ())
+                        })
+                        .map(|_| ()),
+                );
+            }
+            Ok(())
+        }))
+    });
 
     dispatcher
         .downcast_ref::<tracing_timing::TimingSubscriber>()
