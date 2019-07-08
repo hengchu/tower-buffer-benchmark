@@ -5,12 +5,17 @@ authors = ["Jon Gjengset <jon@thesquareplanet.com>"]
 edition = "2018"
 
 [dependencies]
-tokio = "0.1"
+tokio = "0.1.22"
 tokio-sync = "0.1"
 tower = "0.1"
 quanta = "0.3"
 hdrhistogram = "6"
 futures = "0.1"
+tracing = "0.1.2"
+tracing-timing = "0.2"
+
+[profile.release]
+debug = true
 
 [[bin]]
 name = "buffer"
@@ -19,3 +24,7 @@ path = "src/buffer.rs"
 [[bin]]
 name = "channel"
 path = "src/channel.rs"
+
+[[bin]]
+name = "timing"
+path = "src/timing.rs"
